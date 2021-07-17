@@ -1,0 +1,19 @@
+{
+  "name": "@ddu6/cli-tools",
+  "version": "0.0.0",
+  "description": "Command Line Tools",
+  "main": "dist/mod.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddu6/cli-tools.git"
+  },
+  "author": "ddu6",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ddu6/cli-tools/issues"
+  },
+  "homepage": "https://github.com/ddu6/cli-tools#readme",
+  "devDependencies": {
+    "@types/node": "^16.3.3"
+  }
+}
