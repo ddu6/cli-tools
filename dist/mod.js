@@ -16,9 +16,9 @@ const http = require("http");
 const https = require("https");
 const url_1 = require("url");
 class CLIT {
-    constructor(dirname, config) {
+    constructor(dirname, options = {}) {
         this.dirname = dirname;
-        this.config = config;
+        this.options = options;
     }
     static getDate() {
         const date = new Date();
@@ -60,7 +60,7 @@ class CLIT {
         const string = this.log(msg);
         console.log(string + '\n');
     }
-    get(url, params = {}, form = {}, cookie = '', referer = '', noUserAgent = false) {
+    request(url, params = {}, form = {}, cookie = '', referer = '', noUserAgent = false) {
         return __awaiter(this, void 0, void 0, function* () {
             let paramsStr = new url_1.URL(url).searchParams.toString();
             if (paramsStr.length > 0) {
@@ -92,9 +92,10 @@ class CLIT {
                 headers: headers
             };
             const result = yield new Promise((resolve) => {
+                var _a;
                 setTimeout(() => {
                     resolve(500);
-                }, this.config.timeout * 1000);
+                }, ((_a = this.options.requestTimeout) !== null && _a !== void 0 ? _a : 10) * 1000);
                 const httpsOrHTTP = url.startsWith('https://') ? https : http;
                 const req = httpsOrHTTP.request(url, options, (res) => __awaiter(this, void 0, void 0, function* () {
                     const { statusCode } = res;

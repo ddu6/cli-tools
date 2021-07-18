@@ -10,11 +10,11 @@ export interface Res{
     headers:http.IncomingHttpHeaders
     status:number
 }
-export interface Config{
-    timeout:number
+export interface CLITOptions{
+    requestTimeout?:number
 }
 export class CLIT{
-    constructor(readonly dirname:string,readonly config:Config){}
+    constructor(readonly dirname:string,readonly options:CLITOptions={}){}
     static getDate(){
         const date=new Date()
         return [
@@ -53,7 +53,7 @@ export class CLIT{
         const string=this.log(msg)
         console.log(string+'\n')
     }
-    async get(url:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false){
+    async request(url:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false){
         let paramsStr=new URL(url).searchParams.toString()
         if(paramsStr.length>0){
             paramsStr+='&'
@@ -86,7 +86,7 @@ export class CLIT{
         const result=await new Promise((resolve:(val:number|Res)=>void)=>{
             setTimeout(()=>{
                 resolve(500)
-            },this.config.timeout*1000)
+            },(this.options.requestTimeout??10)*1000)
             const httpsOrHTTP=url.startsWith('https://')?https:http
             const req=httpsOrHTTP.request(url,options,async res=>{
                 const {statusCode}=res
