@@ -3,6 +3,7 @@ import {join} from 'path'
 import * as http from 'http'
 import * as https from 'https'
 import {URL,URLSearchParams} from 'url'
+import ProxyAgent=require('proxy-agent')
 export interface Res{
     body:string
     buffer:Buffer
@@ -87,14 +88,13 @@ export class CLIT{
         let proxies=this.options.proxies??[]
         if(proxies.length===0){
             const {http_proxy}=process.env
-            if(http_proxy!==undefined&&http_proxy.startsWith('http://')){
+            if(http_proxy!==undefined&&http_proxy!==''){
                 proxies=[http_proxy]
             }
         }
         if(proxies.length>0){
             const i=Math.min(Math.floor(Math.random()*proxies.length),proxies.length-1)
-            options.path=url
-            url=proxies[i]
+            options.agent=new ProxyAgent(proxies[i])
         }
         const result=await new Promise((resolve:(val:number|Res)=>void)=>{
             setTimeout(()=>{

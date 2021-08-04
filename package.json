@@ -3,6 +3,9 @@
   "version": "0.0.3",
   "description": "Command Line Tools",
   "main": "dist/mod.js",
+  "scripts": {
+    "test": "node test/main.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ddu6/cli-tools.git"
@@ -15,5 +18,8 @@
   "homepage": "https://github.com/ddu6/cli-tools#readme",
   "devDependencies": {
     "@types/node": "^16.3.3"
+  },
+  "dependencies": {
+    "proxy-agent": "^5.0.0"
   }
 }

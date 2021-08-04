@@ -15,6 +15,7 @@ const path_1 = require("path");
 const http = require("http");
 const https = require("https");
 const url_1 = require("url");
+const ProxyAgent = require("proxy-agent");
 class CLIT {
     constructor(dirname, options = {}) {
         this.dirname = dirname;
@@ -95,14 +96,13 @@ class CLIT {
             let proxies = (_a = this.options.proxies) !== null && _a !== void 0 ? _a : [];
             if (proxies.length === 0) {
                 const { http_proxy } = process.env;
-                if (http_proxy !== undefined && http_proxy.startsWith('http://')) {
+                if (http_proxy !== undefined && http_proxy !== '') {
                     proxies = [http_proxy];
                 }
             }
             if (proxies.length > 0) {
                 const i = Math.min(Math.floor(Math.random() * proxies.length), proxies.length - 1);
-                options.path = url;
-                url = proxies[i];
+                options.agent = new ProxyAgent(proxies[i]);
             }
             const result = yield new Promise((resolve) => {
                 var _a;
