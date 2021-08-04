@@ -9,6 +9,7 @@ export interface Res {
 }
 export interface CLITOptions {
     requestTimeout?: number;
+    proxies?: string[];
 }
 export declare class CLIT {
     readonly dirname: string;

@@ -12,6 +12,7 @@ export interface Res{
 }
 export interface CLITOptions{
     requestTimeout?:number
+    proxies?:string[]
 }
 export class CLIT{
     constructor(readonly dirname:string,readonly options:CLITOptions={}){}
@@ -82,6 +83,18 @@ export class CLIT{
         const options:https.RequestOptions={
             method:formStr.length>0?'POST':'GET',
             headers:headers
+        }
+        let proxies=this.options.proxies??[]
+        if(proxies.length===0){
+            const {http_proxy}=process.env
+            if(http_proxy!==undefined&&http_proxy.startsWith('http://')){
+                proxies=[http_proxy]
+            }
+        }
+        if(proxies.length>0){
+            const i=Math.min(Math.floor(Math.random()*proxies.length),proxies.length-1)
+            options.path=url
+            url=proxies[i]
         }
         const result=await new Promise((resolve:(val:number|Res)=>void)=>{
             setTimeout(()=>{

@@ -61,6 +61,7 @@ class CLIT {
         console.log(string + '\n');
     }
     request(url, params = {}, form = {}, cookie = '', referer = '', noUserAgent = false) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let paramsStr = new url_1.URL(url).searchParams.toString();
             if (paramsStr.length > 0) {
@@ -91,6 +92,18 @@ class CLIT {
                 method: formStr.length > 0 ? 'POST' : 'GET',
                 headers: headers
             };
+            let proxies = (_a = this.options.proxies) !== null && _a !== void 0 ? _a : [];
+            if (proxies.length === 0) {
+                const { http_proxy } = process.env;
+                if (http_proxy !== undefined && http_proxy.startsWith('http://')) {
+                    proxies = [http_proxy];
+                }
+            }
+            if (proxies.length > 0) {
+                const i = Math.min(Math.floor(Math.random() * proxies.length), proxies.length - 1);
+                options.path = url;
+                url = proxies[i];
+            }
             const result = yield new Promise((resolve) => {
                 var _a;
                 setTimeout(() => {
