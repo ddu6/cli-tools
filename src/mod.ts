@@ -25,9 +25,12 @@ export class CLIT{
         ]
         .map(val=>val.toString().padStart(2,'0'))
         .join('-')
-        +' '
-        +[
-            date.getHours(),date.getMinutes(),
+    }
+    static getTime(){
+        const date=new Date()
+        return [
+            date.getHours(),
+            date.getMinutes(),
             date.getSeconds()
         ]
         .map(val=>val.toString().padStart(2,'0'))
@@ -36,7 +39,7 @@ export class CLIT{
         +date.getMilliseconds().toString().padStart(3,'0')
     }
     log(msg:string|Error){
-        let string=CLIT.getDate()+'  '
+        let string=CLIT.getTime()+'  '
         if(typeof msg!=='string'){
             const {stack}=msg
             if(stack!==undefined){
@@ -48,7 +51,7 @@ export class CLIT{
             string+=msg
         }
         string=string.replace(/\n */g,'\n                    ')
-        appendFileSync(join(this.dirname,'../info/log.txt'),string+'\n\n')
+        appendFileSync(join(this.dirname,`../info/${CLIT.getDate()}.log`),string+'\n\n')
         return string
     }
     out(msg:string|Error){

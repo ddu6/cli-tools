@@ -16,6 +16,7 @@ export declare class CLIT {
     readonly options: CLITOptions;
     constructor(dirname: string, options?: CLITOptions);
     static getDate(): string;
+    static getTime(): string;
     log(msg: string | Error): string;
     out(msg: string | Error): void;
     request(url: string, params?: Record<string, string>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean): Promise<number | Res>;

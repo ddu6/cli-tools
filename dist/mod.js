@@ -28,19 +28,22 @@ class CLIT {
             date.getDate()
         ]
             .map(val => val.toString().padStart(2, '0'))
-            .join('-')
-            + ' '
-            + [
-                date.getHours(), date.getMinutes(),
-                date.getSeconds()
-            ]
-                .map(val => val.toString().padStart(2, '0'))
-                .join(':')
+            .join('-');
+    }
+    static getTime() {
+        const date = new Date();
+        return [
+            date.getHours(),
+            date.getMinutes(),
+            date.getSeconds()
+        ]
+            .map(val => val.toString().padStart(2, '0'))
+            .join(':')
             + ':'
             + date.getMilliseconds().toString().padStart(3, '0');
     }
     log(msg) {
-        let string = CLIT.getDate() + '  ';
+        let string = CLIT.getTime() + '  ';
         if (typeof msg !== 'string') {
             const { stack } = msg;
             if (stack !== undefined) {
@@ -54,7 +57,7 @@ class CLIT {
             string += msg;
         }
         string = string.replace(/\n */g, '\n                    ');
-        fs_1.appendFileSync(path_1.join(this.dirname, '../info/log.txt'), string + '\n\n');
+        fs_1.appendFileSync(path_1.join(this.dirname, `../info/${CLIT.getDate()}.log`), string + '\n\n');
         return string;
     }
     out(msg) {
