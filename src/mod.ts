@@ -50,7 +50,7 @@ export class CLIT{
         }else{
             string+=msg
         }
-        string=string.replace(/\n */g,'\n                    ')
+        string=string.replace(/\n */g,'\n              ')
         appendFileSync(join(this.dirname,`../info/${CLIT.getDate()}.log`),string+'\n\n')
         return string
     }
