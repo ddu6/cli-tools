@@ -64,7 +64,7 @@ class CLIT {
         const string = this.log(msg);
         console.log(string + '\n');
     }
-    request(url, params = {}, form = {}, cookie = '', referer = '', noUserAgent = false) {
+    request(url, params = {}, form = {}, cookie = '', referer = '', noUserAgent = false, requestTimeout = this.options.requestTimeout) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let paramsStr = new url_1.URL(url).searchParams.toString();
@@ -108,10 +108,9 @@ class CLIT {
                 options.agent = new ProxyAgent(proxies[i]);
             }
             const result = yield new Promise((resolve) => {
-                var _a;
                 setTimeout(() => {
                     resolve(500);
-                }, ((_a = this.options.requestTimeout) !== null && _a !== void 0 ? _a : 10) * 1000);
+                }, (requestTimeout !== null && requestTimeout !== void 0 ? requestTimeout : 10) * 1000);
                 const httpsOrHTTP = url.startsWith('https://') ? https : http;
                 const req = httpsOrHTTP.request(url, options, (res) => __awaiter(this, void 0, void 0, function* () {
                     const { statusCode } = res;

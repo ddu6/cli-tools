@@ -58,7 +58,7 @@ export class CLIT{
         const string=this.log(msg)
         console.log(string+'\n')
     }
-    async request(url:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false){
+    async request(url:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout){
         let paramsStr=new URL(url).searchParams.toString()
         if(paramsStr.length>0){
             paramsStr+='&'
@@ -102,7 +102,7 @@ export class CLIT{
         const result=await new Promise((resolve:(val:number|Res)=>void)=>{
             setTimeout(()=>{
                 resolve(500)
-            },(this.options.requestTimeout??10)*1000)
+            },(requestTimeout??10)*1000)
             const httpsOrHTTP=url.startsWith('https://')?https:http
             const req=httpsOrHTTP.request(url,options,async res=>{
                 const {statusCode}=res
