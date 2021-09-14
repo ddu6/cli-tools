@@ -111,7 +111,7 @@ class CLIT {
             }
             const result = yield new Promise((resolve) => {
                 setTimeout(() => {
-                    resolve(500);
+                    resolve(408);
                 }, (requestTimeout !== null && requestTimeout !== void 0 ? requestTimeout : 10) * 1000);
                 const httpsOrHTTP = url.startsWith('https://') ? https : http;
                 const req = httpsOrHTTP.request(url, options, (res) => __awaiter(this, void 0, void 0, function* () {

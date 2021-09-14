@@ -103,7 +103,7 @@ export class CLIT{
         }
         const result=await new Promise((resolve:(val:number|Res)=>void)=>{
             setTimeout(()=>{
-                resolve(500)
+                resolve(408)
             },(requestTimeout??10)*1000)
             const httpsOrHTTP=url.startsWith('https://')?https:http
             const req=httpsOrHTTP.request(url,options,async res=>{
