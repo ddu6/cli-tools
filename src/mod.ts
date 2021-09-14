@@ -14,6 +14,7 @@ export interface Res{
 export interface CLITOptions{
     requestTimeout?:number
     proxies?:string[]
+    logLevel?:number
 }
 export class CLIT{
     constructor(readonly dirname:string,readonly options:CLITOptions={}){}
@@ -38,7 +39,7 @@ export class CLIT{
         +':'
         +date.getMilliseconds().toString().padStart(3,'0')
     }
-    log(msg:string|Error){
+    log(msg:string|Error,level?:number){
         let string=CLIT.getTime()+'  '
         if(typeof msg!=='string'){
             const {stack}=msg
@@ -51,12 +52,13 @@ export class CLIT{
             string+=msg
         }
         string=string.replace(/\n */g,'\n              ')
-        appendFileSync(join(this.dirname,`../info/${CLIT.getDate()}.log`),string+'\n\n')
+        if((level??0)<=(this.options.logLevel??0)){
+            appendFileSync(join(this.dirname,`../info/${CLIT.getDate()}.log`),string+'\n\n')
+        }
         return string
     }
-    out(msg:string|Error){
-        const string=this.log(msg)
-        console.log(string+'\n')
+    out(msg:string|Error,level?:number){
+        console.log(this.log(msg,level)+'\n')
     }
     async request(url:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout){
         let paramsStr=new URL(url).searchParams.toString()

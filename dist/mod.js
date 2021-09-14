@@ -42,7 +42,8 @@ class CLIT {
             + ':'
             + date.getMilliseconds().toString().padStart(3, '0');
     }
-    log(msg) {
+    log(msg, level) {
+        var _a;
         let string = CLIT.getTime() + '  ';
         if (typeof msg !== 'string') {
             const { stack } = msg;
@@ -57,12 +58,13 @@ class CLIT {
             string += msg;
         }
         string = string.replace(/\n */g, '\n              ');
-        fs_1.appendFileSync(path_1.join(this.dirname, `../info/${CLIT.getDate()}.log`), string + '\n\n');
+        if ((level !== null && level !== void 0 ? level : 0) <= ((_a = this.options.logLevel) !== null && _a !== void 0 ? _a : 0)) {
+            fs_1.appendFileSync(path_1.join(this.dirname, `../info/${CLIT.getDate()}.log`), string + '\n\n');
+        }
         return string;
     }
-    out(msg) {
-        const string = this.log(msg);
-        console.log(string + '\n');
+    out(msg, level) {
+        console.log(this.log(msg, level) + '\n');
     }
     request(url, params = {}, form = {}, cookie = '', referer = '', noUserAgent = false, requestTimeout = this.options.requestTimeout) {
         var _a;

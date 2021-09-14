@@ -10,6 +10,7 @@ export interface Res {
 export interface CLITOptions {
     requestTimeout?: number;
     proxies?: string[];
+    logLevel?: number;
 }
 export declare class CLIT {
     readonly dirname: string;
@@ -17,7 +18,7 @@ export declare class CLIT {
     constructor(dirname: string, options?: CLITOptions);
     static getDate(): string;
     static getTime(): string;
-    log(msg: string | Error): string;
-    out(msg: string | Error): void;
+    log(msg: string | Error, level?: number): string;
+    out(msg: string | Error, level?: number): void;
     request(url: string, params?: Record<string, string>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number | undefined): Promise<number | Res>;
 }
