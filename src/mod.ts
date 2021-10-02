@@ -105,10 +105,7 @@ export class CLIT{
             proxy=''
         }
         if(proxy.length===0){
-            const {http_proxy}=process.env
-            if(http_proxy!==undefined){
-                proxy=http_proxy
-            }
+            proxy=process.env.http_proxy??''
         }
         if(proxy.length>0){
             options.agent=new ProxyAgent(proxy)
@@ -170,7 +167,6 @@ export class CLIT{
             searchParams.append(key,params[key].toString())
         }
         url=urlo.href
-        path=join(__dirname,path)
         const headers:http.OutgoingHttpHeaders={}
         if(cookie.length>0){
             headers.Cookie=cookie
@@ -197,10 +193,7 @@ export class CLIT{
             proxy=''
         }
         if(proxy.length===0){
-            const {http_proxy}=process.env
-            if(http_proxy!==undefined){
-                proxy=http_proxy
-            }
+            proxy=process.env.http_proxy??''
         }
         if(proxy.length>0){
             options.agent=new ProxyAgent(proxy)
