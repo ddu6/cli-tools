@@ -258,7 +258,7 @@ export class CLIT{
                 res.on('data',chunk=>{
                     currentLength+=chunk.length
                     if(verbose){
-                        process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}`)
+                        process.stdout.write(`${(currentLength/contentLength*100).toFixed(3)}%\r`)
                     }
                     if(timeout){
                         res.destroy()
@@ -266,6 +266,9 @@ export class CLIT{
                     }
                 })
                 stream.on('close',()=>{
+                    if(verbose){
+                        process.stdout.write(`        \n`)
+                    }
                     if(currentLength===contentLength){
                         resolve(200)
                         return
@@ -273,6 +276,9 @@ export class CLIT{
                     unlinkSync(path)
                     resolve(500)
                 })
+                if(verbose){
+                    console.log(`${prettyContentLength} will be downloaded to ${path}`)
+                }
                 res.pipe(stream)
             }).on('error',err=>{
                 this.log(err)
