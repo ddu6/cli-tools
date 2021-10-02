@@ -237,7 +237,7 @@ export class CLIT{
                     return
                 }
                 try{
-                    stream=createWriteStream(path)
+                    stream=createWriteStream(join(__dirname,path))
                     streamStart=true
                 }catch(err){
                     if(err instanceof Error){
@@ -253,7 +253,7 @@ export class CLIT{
                 stream.on('error',err=>{
                     this.log(err)
                 })
-                stream.on('data',chunk=>{
+                res.on('data',chunk=>{
                     currentLength+=chunk.length
                     if(verbose){
                         process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}`)

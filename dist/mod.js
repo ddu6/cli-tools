@@ -265,7 +265,7 @@ class CLIT {
                         return;
                     }
                     try {
-                        stream = (0, fs_1.createWriteStream)(path);
+                        stream = (0, fs_1.createWriteStream)((0, path_1.join)(__dirname, path));
                         streamStart = true;
                     }
                     catch (err) {
@@ -282,7 +282,7 @@ class CLIT {
                     stream.on('error', err => {
                         this.log(err);
                     });
-                    stream.on('data', chunk => {
+                    res.on('data', chunk => {
                         currentLength += chunk.length;
                         if (verbose) {
                             process.stdout.write(`\r${(currentLength / contentLength * 100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}`);
