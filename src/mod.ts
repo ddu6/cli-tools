@@ -1,8 +1,8 @@
-import { appendFileSync,WriteStream,createWriteStream, existsSync, unlinkSync } from 'fs'
-import {join} from 'path'
+import { appendFileSync, WriteStream, createWriteStream, unlinkSync } from 'fs'
+import { join } from 'path'
 import * as http from 'http'
 import * as https from 'https'
-import {URL,URLSearchParams} from 'url'
+import { URL, URLSearchParams } from 'url'
 import ProxyAgent=require('proxy-agent')
 export interface Res{
     body:string
