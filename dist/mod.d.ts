@@ -9,7 +9,7 @@ export interface Res {
 }
 export interface CLITOptions {
     requestTimeout?: number;
-    proxies?: string[];
+    proxy?: string;
     logLevel?: number;
 }
 export declare class CLIT {
@@ -18,7 +18,9 @@ export declare class CLIT {
     constructor(dirname: string, options?: CLITOptions);
     static getDate(): string;
     static getTime(): string;
+    static prettyData(number: number): string;
     log(msg: string | Error, level?: number): string;
     out(msg: string | Error, level?: number): void;
-    request(url: string, params?: Record<string, string>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxies?: string[]): Promise<number | Res>;
+    request(url: string, params?: Record<string, string | number>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxy?: string): Promise<number | Res>;
+    download(url: string, path: string, params?: Record<string, string>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxy?: string, verbose?: boolean): Promise<number>;
 }

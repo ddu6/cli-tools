@@ -1,4 +1,4 @@
-import { appendFileSync } from 'fs'
+import { appendFileSync,WriteStream,createWriteStream } from 'fs'
 import {join} from 'path'
 import * as http from 'http'
 import * as https from 'https'
@@ -13,7 +13,7 @@ export interface Res{
 }
 export interface CLITOptions{
     requestTimeout?:number
-    proxies?:string[]
+    proxy?:string
     logLevel?:number
 }
 export class CLIT{
@@ -39,6 +39,18 @@ export class CLIT{
         +':'
         +date.getMilliseconds().toString().padStart(3,'0')
     }
+    static prettyData(number:number){
+        if(number<1024){
+            return number+' B'
+        }
+        if(number<1048576){
+            return Math.round(number/1.024)/1000+' KiB'
+        }
+        if(number<1073741824){
+            return Math.round(number/1048.576)/1000+' MiB'
+        }
+        return Math.round(number/1073741.824)/1000+' GiB'
+    }
     log(msg:string|Error,level?:number){
         let string=CLIT.getTime()+'  '
         if(typeof msg!=='string'){
@@ -60,17 +72,13 @@ export class CLIT{
     out(msg:string|Error,level?:number){
         console.log(this.log(msg,level)+'\n')
     }
-    async request(url:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout??10,proxies=this.options.proxies??[]){
-        let paramsStr=new URL(url).searchParams.toString()
-        if(paramsStr.length>0){
-            paramsStr+='&'
+    async request(url:string,params:Record<string,string|number>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout??10,proxy=this.options.proxy??''){
+        const urlo=new URL(url)
+        const {searchParams}=urlo
+        for(const key of Object.keys(params)){
+            searchParams.append(key,params[key].toString())
         }
-        paramsStr+=new URLSearchParams(params).toString()
-        if(paramsStr.length>0){
-            paramsStr='?'+paramsStr
-        }
-        url=new URL(paramsStr,url).href
-        const formStr=new URLSearchParams(form).toString()
+        url=urlo.href
         const headers:http.OutgoingHttpHeaders={}
         if(cookie.length>0){
             headers.Cookie=cookie
@@ -81,24 +89,29 @@ export class CLIT{
         if(!noUserAgent){
             headers['User-Agent']='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'
         }
+        const formStr=new URLSearchParams(form).toString()
+        let method='GET'
         if(formStr.length>0){
+            method='POST'
             Object.assign(headers,{
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             })
         }
         const options:https.RequestOptions={
-            method:formStr.length>0?'POST':'GET',
-            headers:headers
+            method,
+            headers,
         }
-        if(proxies.length===0){
+        if(proxy==='http://xx.xx.xx.xx:3128'){
+            proxy=''
+        }
+        if(proxy.length===0){
             const {http_proxy}=process.env
-            if(http_proxy!==undefined&&http_proxy!==''){
-                proxies=[http_proxy]
+            if(http_proxy!==undefined){
+                proxy=http_proxy
             }
         }
-        if(proxies.length>0){
-            const i=Math.min(Math.floor(Math.random()*proxies.length),proxies.length-1)
-            options.agent=new ProxyAgent(proxies[i])
+        if(proxy.length>0){
+            options.agent=new ProxyAgent(proxy)
         }
         const {request}=url.startsWith('https:')?https:http
         return await new Promise((resolve:(val:number|Res)=>void)=>{
@@ -115,13 +128,8 @@ export class CLIT{
                     resolve(statusCode)
                     return
                 }
-                let cookie:string
-                const cookie0=res.headers["set-cookie"]
-                if(cookie0===undefined){
-                    cookie=''
-                }else{
-                    cookie=cookie0.map(val=>val.split(';')[0]).join('; ')
-                }
+                const cookie=(res.headers['set-cookie']??[])
+                .map(val=>val.split(';',1)[0]).join('; ')
                 let body=''
                 const buffers:Buffer[]=[]
                 res.on('data',chunk=>{
@@ -134,9 +142,9 @@ export class CLIT{
                 })
                 res.on('end',()=>{
                     resolve({
-                        body:body,
+                        body,
                         buffer:Buffer.concat(buffers),
-                        cookie:cookie,
+                        cookie,
                         headers:res.headers,
                         status:statusCode
                     })
@@ -145,6 +153,123 @@ export class CLIT{
                     this.log(err)
                     resolve(500)
                 })
+            }).on('error',err=>{
+                this.log(err)
+                resolve(500)
+            })
+            if(formStr.length>0){
+                req.write(formStr)
+            }
+            req.end()
+        })
+    }
+    async download(url:string,path:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout??10,proxy=this.options.proxy??'',verbose=false){
+        const urlo=new URL(url)
+        const {searchParams}=urlo
+        for(const key of Object.keys(params)){
+            searchParams.append(key,params[key].toString())
+        }
+        url=urlo.href
+        const headers:http.OutgoingHttpHeaders={}
+        if(cookie.length>0){
+            headers.Cookie=cookie
+        }
+        if(referer.length>0){
+            headers.Referer=referer
+        }
+        if(!noUserAgent){
+            headers['User-Agent']='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'
+        }
+        const formStr=new URLSearchParams(form).toString()
+        let method='GET'
+        if(formStr.length>0){
+            method='POST'
+            Object.assign(headers,{
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            })
+        }
+        const options:https.RequestOptions={
+            method,
+            headers,
+        }
+        if(proxy==='http://xx.xx.xx.xx:3128'){
+            proxy=''
+        }
+        if(proxy.length===0){
+            const {http_proxy}=process.env
+            if(http_proxy!==undefined){
+                proxy=http_proxy
+            }
+        }
+        if(proxy.length>0){
+            options.agent=new ProxyAgent(proxy)
+        }
+        const {request}=url.startsWith('https:')?https:http
+        return await new Promise((resolve:(val:number)=>void)=>{
+            let timeout=false
+            let streamStart=false
+            setTimeout(()=>{
+                timeout=true
+                if(!streamStart){
+                    resolve(408)
+                }
+            },requestTimeout*1000)
+            const req=request(url,options,async res=>{
+                const {statusCode}=res
+                if(statusCode===undefined){
+                    resolve(500)
+                    return
+                }
+                if(statusCode!==200&&statusCode!==206){
+                    resolve(statusCode)
+                    return
+                }
+                const contentLengthStr=res.headers['content-length']
+                if(contentLengthStr===undefined){
+                    resolve(500)
+                    return
+                }
+                const contentLength=Number(contentLengthStr)
+                const prettyContentLength=CLIT.prettyData(contentLength)
+                let currentLength=0
+                let stream:WriteStream
+                if(timeout){
+                    return
+                }
+                try{
+                    stream=createWriteStream(path)
+                    streamStart=true
+                }catch(err){
+                    if(err instanceof Error){
+                        this.log(err)
+                    }
+                    resolve(500)
+                    return
+                }
+                res.on('error',err=>{
+                    this.log(err)
+                    stream.end()
+                })
+                stream.on('error',err=>{
+                    this.log(err)
+                })
+                stream.on('data',chunk=>{
+                    currentLength+=chunk.length
+                    if(verbose){
+                        process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}`)
+                    }
+                    if(timeout){
+                        stream.end()
+                    }
+                })
+                stream.on('end',()=>{
+                    if(currentLength===contentLength){
+                        resolve(200)
+                        return
+                    }
+                    resolve(500)
+                })
+                res.pipe(stream)
             }).on('error',err=>{
                 this.log(err)
                 resolve(500)
