@@ -51,9 +51,9 @@ export class CLIT{
         }
         return Math.round(number/1073741.824)/1000+' GiB'
     }
-    log(msg:string|Error,level?:number){
+    log(msg:string|number|Error,level?:number){
         let string=CLIT.getTime()+'  '
-        if(typeof msg!=='string'){
+        if(msg instanceof Error){
             const {stack}=msg
             if(stack!==undefined){
                 string+=stack
@@ -61,7 +61,7 @@ export class CLIT{
                 string+=msg.message
             }
         }else{
-            string+=msg
+            string+=msg.toString()
         }
         string=string.replace(/\n */g,'\n              ')
         if((level??0)<=(this.options.logLevel??0)){
@@ -69,7 +69,7 @@ export class CLIT{
         }
         return string
     }
-    out(msg:string|Error,level?:number){
+    out(msg:string|number|Error,level?:number){
         console.log(this.log(msg,level)+'\n')
     }
     async request(url:string,params:Record<string,string|number>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout??10,proxy=this.options.proxy??''){
@@ -256,7 +256,7 @@ export class CLIT{
                 res.on('data',chunk=>{
                     currentLength+=chunk.length
                     if(verbose){
-                        process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}`)
+                        process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}\r`)
                     }
                     if(timeout){
                         stream.end()

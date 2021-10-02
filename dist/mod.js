@@ -57,7 +57,7 @@ class CLIT {
     log(msg, level) {
         var _a;
         let string = CLIT.getTime() + '  ';
-        if (typeof msg !== 'string') {
+        if (msg instanceof Error) {
             const { stack } = msg;
             if (stack !== undefined) {
                 string += stack;
@@ -67,7 +67,7 @@ class CLIT {
             }
         }
         else {
-            string += msg;
+            string += msg.toString();
         }
         string = string.replace(/\n */g, '\n              ');
         if ((level !== null && level !== void 0 ? level : 0) <= ((_a = this.options.logLevel) !== null && _a !== void 0 ? _a : 0)) {
@@ -285,7 +285,7 @@ class CLIT {
                     res.on('data', chunk => {
                         currentLength += chunk.length;
                         if (verbose) {
-                            process.stdout.write(`\r${(currentLength / contentLength * 100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}`);
+                            process.stdout.write(`\r${(currentLength / contentLength * 100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}\r`);
                         }
                         if (timeout) {
                             stream.end();
