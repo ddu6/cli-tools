@@ -268,7 +268,7 @@ class CLIT {
                     resolve(500);
                 });
                 if (verbose) {
-                    console.log(`${prettyContentLength} will be downloaded to ${path}`);
+                    this.out(`${prettyContentLength} will be downloaded to ${path}`);
                 }
                 res.pipe(stream);
             }).on('error', err => {
