@@ -59,15 +59,22 @@ class CLIT {
         }
         string = string.replace(/\n */g, '\n              ');
         if ((level !== null && level !== void 0 ? level : 0) <= ((_a = this.options.logLevel) !== null && _a !== void 0 ? _a : 0)) {
-            fs_1.appendFileSync(path_1.join(this.dirname, `../info/${CLIT.getDate()}.log`), string + '\n\n');
+            (0, fs_1.appendFileSync)((0, path_1.join)(this.dirname, `../info/${CLIT.getDate()}.log`), string + '\n\n');
         }
         return string;
     }
     out(msg, level) {
         console.log(this.log(msg, level) + '\n');
     }
-    request(url, params = {}, form = {}, cookie = '', referer = '', noUserAgent = false, requestTimeout = this.options.requestTimeout) {
-        var _a;
+    request(url, params, form, cookie, referer, noUserAgent, requestTimeout, proxies) {
+        var _a, _b;
+        if (params === void 0) { params = {}; }
+        if (form === void 0) { form = {}; }
+        if (cookie === void 0) { cookie = ''; }
+        if (referer === void 0) { referer = ''; }
+        if (noUserAgent === void 0) { noUserAgent = false; }
+        if (requestTimeout === void 0) { requestTimeout = (_a = this.options.requestTimeout) !== null && _a !== void 0 ? _a : 10; }
+        if (proxies === void 0) { proxies = (_b = this.options.proxies) !== null && _b !== void 0 ? _b : []; }
         return __awaiter(this, void 0, void 0, function* () {
             let paramsStr = new url_1.URL(url).searchParams.toString();
             if (paramsStr.length > 0) {
@@ -98,7 +105,6 @@ class CLIT {
                 method: formStr.length > 0 ? 'POST' : 'GET',
                 headers: headers
             };
-            let proxies = (_a = this.options.proxies) !== null && _a !== void 0 ? _a : [];
             if (proxies.length === 0) {
                 const { http_proxy } = process.env;
                 if (http_proxy !== undefined && http_proxy !== '') {
@@ -109,12 +115,12 @@ class CLIT {
                 const i = Math.min(Math.floor(Math.random() * proxies.length), proxies.length - 1);
                 options.agent = new ProxyAgent(proxies[i]);
             }
-            const result = yield new Promise((resolve) => {
+            const { request } = url.startsWith('https:') ? https : http;
+            return yield new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(408);
-                }, (requestTimeout !== null && requestTimeout !== void 0 ? requestTimeout : 10) * 1000);
-                const httpsOrHTTP = url.startsWith('https://') ? https : http;
-                const req = httpsOrHTTP.request(url, options, (res) => __awaiter(this, void 0, void 0, function* () {
+                }, requestTimeout * 1000);
+                const req = request(url, options, (res) => __awaiter(this, void 0, void 0, function* () {
                     const { statusCode } = res;
                     if (statusCode === undefined) {
                         resolve(500);
@@ -165,7 +171,6 @@ class CLIT {
                 }
                 req.end();
             });
-            return result;
         });
     }
 }

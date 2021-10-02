@@ -20,5 +20,5 @@ export declare class CLIT {
     static getTime(): string;
     log(msg: string | Error, level?: number): string;
     out(msg: string | Error, level?: number): void;
-    request(url: string, params?: Record<string, string>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number | undefined): Promise<number | Res>;
+    request(url: string, params?: Record<string, string>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxies?: string[]): Promise<number | Res>;
 }

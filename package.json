@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/ddu6/cli-tools#readme",
   "devDependencies": {
-    "@types/node": "^16.7.10"
+    "@types/node": "^16.10.2"
   },
   "dependencies": {
     "proxy-agent": "^5.0.0"

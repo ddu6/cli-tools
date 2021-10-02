@@ -60,7 +60,7 @@ export class CLIT{
     out(msg:string|Error,level?:number){
         console.log(this.log(msg,level)+'\n')
     }
-    async request(url:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout){
+    async request(url:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout??10,proxies=this.options.proxies??[]){
         let paramsStr=new URL(url).searchParams.toString()
         if(paramsStr.length>0){
             paramsStr+='&'
@@ -90,7 +90,6 @@ export class CLIT{
             method:formStr.length>0?'POST':'GET',
             headers:headers
         }
-        let proxies=this.options.proxies??[]
         if(proxies.length===0){
             const {http_proxy}=process.env
             if(http_proxy!==undefined&&http_proxy!==''){
@@ -101,12 +100,12 @@ export class CLIT{
             const i=Math.min(Math.floor(Math.random()*proxies.length),proxies.length-1)
             options.agent=new ProxyAgent(proxies[i])
         }
-        const result=await new Promise((resolve:(val:number|Res)=>void)=>{
+        const {request}=url.startsWith('https:')?https:http
+        return await new Promise((resolve:(val:number|Res)=>void)=>{
             setTimeout(()=>{
                 resolve(408)
-            },(requestTimeout??10)*1000)
-            const httpsOrHTTP=url.startsWith('https://')?https:http
-            const req=httpsOrHTTP.request(url,options,async res=>{
+            },requestTimeout*1000)
+            const req=request(url,options,async res=>{
                 const {statusCode}=res
                 if(statusCode===undefined){
                     resolve(500)
@@ -155,6 +154,5 @@ export class CLIT{
             }
             req.end()
         })
-        return result
     }
 }
