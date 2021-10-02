@@ -1,6 +1,6 @@
 {
   "name": "@ddu6/cli-tools",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Command Line Tools",
   "main": "dist/mod.js",
   "scripts": {
