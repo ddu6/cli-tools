@@ -258,7 +258,7 @@ export class CLIT{
                 res.on('data',chunk=>{
                     currentLength+=chunk.length
                     if(verbose){
-                        process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}\r`)
+                        process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}`)
                     }
                     if(timeout){
                         res.destroy()
