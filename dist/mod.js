@@ -198,6 +198,7 @@ class CLIT {
                 searchParams.append(key, params[key].toString());
             }
             url = urlo.href;
+            path = (0, path_1.join)(__dirname, path);
             const headers = {};
             if (cookie.length > 0) {
                 headers.Cookie = cookie;
@@ -265,7 +266,7 @@ class CLIT {
                         return;
                     }
                     try {
-                        stream = (0, fs_1.createWriteStream)((0, path_1.join)(__dirname, path));
+                        stream = (0, fs_1.createWriteStream)(path);
                         streamStart = true;
                     }
                     catch (err) {
@@ -280,6 +281,7 @@ class CLIT {
                         stream.end();
                     });
                     stream.on('error', err => {
+                        res.destroy();
                         this.log(err);
                     });
                     res.on('data', chunk => {
@@ -288,14 +290,16 @@ class CLIT {
                             process.stdout.write(`\r${(currentLength / contentLength * 100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}\r`);
                         }
                         if (timeout) {
+                            res.destroy();
                             stream.end();
                         }
                     });
-                    stream.on('end', () => {
+                    stream.on('close', () => {
                         if (currentLength === contentLength) {
                             resolve(200);
                             return;
                         }
+                        (0, fs_1.unlinkSync)(path);
                         resolve(500);
                     });
                     res.pipe(stream);

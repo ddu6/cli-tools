@@ -1,4 +1,4 @@
-import { appendFileSync,WriteStream,createWriteStream } from 'fs'
+import { appendFileSync,WriteStream,createWriteStream, existsSync, unlinkSync } from 'fs'
 import {join} from 'path'
 import * as http from 'http'
 import * as https from 'https'
@@ -170,6 +170,7 @@ export class CLIT{
             searchParams.append(key,params[key].toString())
         }
         url=urlo.href
+        path=join(__dirname,path)
         const headers:http.OutgoingHttpHeaders={}
         if(cookie.length>0){
             headers.Cookie=cookie
@@ -237,7 +238,7 @@ export class CLIT{
                     return
                 }
                 try{
-                    stream=createWriteStream(join(__dirname,path))
+                    stream=createWriteStream(path)
                     streamStart=true
                 }catch(err){
                     if(err instanceof Error){
@@ -251,6 +252,7 @@ export class CLIT{
                     stream.end()
                 })
                 stream.on('error',err=>{
+                    res.destroy()
                     this.log(err)
                 })
                 res.on('data',chunk=>{
@@ -259,14 +261,16 @@ export class CLIT{
                         process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}% of ${prettyContentLength} downloaded to ${path}\r`)
                     }
                     if(timeout){
+                        res.destroy()
                         stream.end()
                     }
                 })
-                stream.on('end',()=>{
+                stream.on('close',()=>{
                     if(currentLength===contentLength){
                         resolve(200)
                         return
                     }
+                    unlinkSync(path)
                     resolve(500)
                 })
                 res.pipe(stream)
