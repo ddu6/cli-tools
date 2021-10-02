@@ -258,7 +258,7 @@ export class CLIT{
                 res.on('data',chunk=>{
                     currentLength+=chunk.length
                     if(verbose){
-                        process.stdout.write(`${(currentLength/contentLength*100).toFixed(3)}%\r`)
+                        process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}%`)
                     }
                     if(timeout){
                         res.destroy()
@@ -267,7 +267,7 @@ export class CLIT{
                 })
                 stream.on('close',()=>{
                     if(verbose){
-                        process.stdout.write(`        \n`)
+                        process.stdout.write(`\r        \n`)
                     }
                     if(currentLength===contentLength){
                         resolve(200)
