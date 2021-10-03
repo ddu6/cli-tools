@@ -22,5 +22,5 @@ export declare class CLIT {
     log(msg: string | number | Error, level?: number): string;
     out(msg: string | number | Error, level?: number): void;
     request(url: string, params?: Record<string, string | number>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxy?: string): Promise<number | Res>;
-    download(url: string, path: string, params?: Record<string, string>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxy?: string, verbose?: boolean): Promise<number>;
+    download(url: string, path: string, params?: Record<string, string | number>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxy?: string, verbose?: boolean): Promise<number>;
 }

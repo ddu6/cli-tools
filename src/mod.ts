@@ -160,7 +160,7 @@ export class CLIT{
             req.end()
         })
     }
-    async download(url:string,path:string,params:Record<string,string>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout??10,proxy=this.options.proxy??'',verbose=false){
+    async download(url:string,path:string,params:Record<string,string|number>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout??10,proxy=this.options.proxy??'',verbose=false){
         const urlo=new URL(url)
         const {searchParams}=urlo
         for(const key of Object.keys(params)){
