@@ -21,6 +21,7 @@ export declare class CLIT {
     static prettyData(number: number): string;
     log(msg: string | number | Error, level?: number): string;
     out(msg: string | number | Error, level?: number): void;
+    sleep(time: number): Promise<void>;
     request(url: string, params?: Record<string, string | number>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxy?: string): Promise<number | Res>;
     download(url: string, path: string, params?: Record<string, string | number>, form?: Record<string, string>, cookie?: string, referer?: string, noUserAgent?: boolean, requestTimeout?: number, proxy?: string, verbose?: boolean): Promise<number>;
 }

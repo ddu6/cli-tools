@@ -68,6 +68,11 @@ class CLIT {
     out(msg, level) {
         console.log(this.log(msg, level) + '\n');
     }
+    async sleep(time) {
+        await new Promise(resolve => {
+            setTimeout(resolve, time * 1000);
+        });
+    }
     async request(url, params = {}, form = {}, cookie = '', referer = '', noUserAgent = false, requestTimeout = this.options.requestTimeout ?? 10, proxy = this.options.proxy ?? '') {
         const urlo = new url_1.URL(url);
         const { searchParams } = urlo;

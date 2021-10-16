@@ -72,6 +72,11 @@ export class CLIT{
     out(msg:string|number|Error,level?:number){
         console.log(this.log(msg,level)+'\n')
     }
+    async sleep(time:number){
+        await new Promise(resolve=>{
+            setTimeout(resolve,time*1000)
+        })
+    }
     async request(url:string,params:Record<string,string|number>={},form:Record<string,string>={},cookie='',referer='',noUserAgent=false,requestTimeout=this.options.requestTimeout??10,proxy=this.options.proxy??''){
         const urlo=new URL(url)
         const {searchParams}=urlo
