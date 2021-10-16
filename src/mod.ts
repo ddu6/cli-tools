@@ -247,10 +247,14 @@ export class CLIT{
                 }
                 res.on('error',err=>{
                     this.log(err)
-                    stream.end()
+                    if(!stream.destroyed){
+                        stream.destroy()
+                    }
                 })
                 stream.on('error',err=>{
-                    res.destroy()
+                    if(!res.destroyed){
+                        res.destroy()
+                    }
                     this.log(err)
                 })
                 res.on('data',chunk=>{
@@ -259,8 +263,12 @@ export class CLIT{
                         process.stdout.write(`\r${(currentLength/contentLength*100).toFixed(3)}%`)
                     }
                     if(timeout){
-                        res.destroy()
-                        stream.end()
+                        if(!res.destroyed){
+                            res.destroy()
+                        }
+                        if(!stream.destroyed){
+                            stream.destroy()
+                        }
                     }
                 })
                 stream.on('close',()=>{
@@ -278,6 +286,14 @@ export class CLIT{
                     this.out(`${prettyContentLength} will be downloaded to ${path}`)
                 }
                 res.pipe(stream)
+                setTimeout(()=>{
+                    if(!res.destroyed){
+                        res.destroy()
+                    }
+                    if(!stream.destroyed){
+                        stream.destroy()
+                    }
+                },requestTimeout*1000)
             }).on('error',err=>{
                 this.log(err)
                 resolve(500)
