@@ -171,6 +171,7 @@ class CLIT {
                     if (!res.destroyed) {
                         res.destroy();
                     }
+                    resolve(408);
                 }, requestTimeout * 1000);
             }).on('error', err => {
                 this.log(err);
@@ -203,25 +204,30 @@ class CLIT {
                     resolve(statusCode ?? 500);
                     return;
                 }
-                const contentLengthStr = res.headers['content-length'];
-                if (contentLengthStr === undefined) {
-                    if (!res.destroyed) {
-                        res.destroy();
+                let contentLength = 0;
+                let prettyContentLength = '';
+                if (verbose) {
+                    const contentLengthStr = res.headers['content-length'];
+                    if (contentLengthStr === undefined) {
+                        if (!res.destroyed) {
+                            res.destroy();
+                        }
+                        resolve(500);
+                        return;
                     }
-                    resolve(500);
-                    return;
+                    contentLength = Number(contentLengthStr);
+                    prettyContentLength = CLIT.prettyData(contentLength);
                 }
-                const contentLength = Number(contentLengthStr);
-                const prettyContentLength = CLIT.prettyData(contentLength);
                 let currentLength = 0;
                 let stream;
+                streamStart = true;
                 if (timeout) {
                     if (!res.destroyed) {
                         res.destroy();
                     }
+                    resolve(408);
                     return;
                 }
-                streamStart = true;
                 try {
                     stream = (0, fs_1.createWriteStream)(path);
                 }
@@ -283,6 +289,7 @@ class CLIT {
                     if (!stream.destroyed) {
                         stream.destroy();
                     }
+                    resolve(408);
                 }, requestTimeout * 1000);
             }).on('error', err => {
                 this.log(err);
