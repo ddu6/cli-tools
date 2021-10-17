@@ -36,6 +36,7 @@ export declare class CLIT {
     out(msg: string | number | Error, level?: number): void;
     sleep(time: number): Promise<void>;
     protected initRequest(url: string, { params, form, cookie, referer, noUserAgent, requestTimeout, proxy, }?: RequestOptions): {
+        fullURL: string;
         request: typeof http.request | typeof https.request;
         options: http.RequestOptions;
         formStr: string;

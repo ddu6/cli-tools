@@ -86,7 +86,7 @@ class CLIT {
         for (const key of Object.keys(params)) {
             searchParams.append(key, params[key].toString());
         }
-        url = urlo.href;
+        const fullURL = urlo.href;
         const headers = {};
         if (cookie.length > 0) {
             headers.Cookie = cookie;
@@ -118,8 +118,9 @@ class CLIT {
         if (proxy.length > 0) {
             options.agent = new ProxyAgent(proxy);
         }
-        const { request } = url.startsWith('https:') ? https : http;
+        const { request } = fullURL.startsWith('https:') ? https : http;
         return {
+            fullURL,
             request,
             options,
             formStr,
@@ -127,12 +128,12 @@ class CLIT {
         };
     }
     async request(url, requestOptions) {
-        const { request, options, formStr, requestTimeout } = this.initRequest(url, requestOptions);
+        const { fullURL, request, options, formStr, requestTimeout } = this.initRequest(url, requestOptions);
         return await new Promise((resolve) => {
             setTimeout(() => {
                 resolve(408);
             }, requestTimeout * 1000);
-            const req = request(url, options, async (res) => {
+            const req = request(fullURL, options, async (res) => {
                 const { statusCode } = res;
                 if (statusCode === undefined || statusCode >= 400) {
                     if (!res.destroyed) {
@@ -184,7 +185,7 @@ class CLIT {
         });
     }
     async download(url, path, downloadOptions) {
-        const { request, options, formStr, requestTimeout } = this.initRequest(url, downloadOptions);
+        const { fullURL, request, options, formStr, requestTimeout } = this.initRequest(url, downloadOptions);
         const { verbose } = downloadOptions ?? {};
         return await new Promise((resolve) => {
             let timeout = false;
@@ -195,7 +196,7 @@ class CLIT {
                     resolve(408);
                 }
             }, requestTimeout * 1000);
-            const req = request(url, options, async (res) => {
+            const req = request(fullURL, options, async (res) => {
                 const { statusCode } = res;
                 if (statusCode !== 200 && statusCode !== 206) {
                     if (!res.destroyed) {
@@ -302,12 +303,12 @@ class CLIT {
         });
     }
     async existsURL(url, requestOptions) {
-        const { request, options, formStr, requestTimeout } = this.initRequest(url, requestOptions);
+        const { fullURL, request, options, formStr, requestTimeout } = this.initRequest(url, requestOptions);
         return await new Promise((resolve) => {
             setTimeout(() => {
                 resolve(false);
             }, requestTimeout * 1000);
-            const req = request(url, options, res => {
+            const req = request(fullURL, options, res => {
                 const { statusCode } = res;
                 if (statusCode === undefined || statusCode >= 400) {
                     resolve(false);

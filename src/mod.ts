@@ -110,7 +110,7 @@ export class CLIT{
         for(const key of Object.keys(params)){
             searchParams.append(key,params[key].toString())
         }
-        url=urlo.href
+        const fullURL=urlo.href
         const headers:http.OutgoingHttpHeaders={}
         if(cookie.length>0){
             headers.Cookie=cookie
@@ -142,8 +142,9 @@ export class CLIT{
         if(proxy.length>0){
             options.agent=new ProxyAgent(proxy)
         }
-        const {request}=url.startsWith('https:')?https:http
+        const {request}=fullURL.startsWith('https:')?https:http
         return {
+            fullURL,
             request,
             options,
             formStr,
@@ -152,6 +153,7 @@ export class CLIT{
     }
     async request(url:string,requestOptions?:RequestOptions){
         const {
+            fullURL,
             request,
             options,
             formStr,
@@ -161,7 +163,7 @@ export class CLIT{
             setTimeout(()=>{
                 resolve(408)
             },requestTimeout*1000)
-            const req=request(url,options,async res=>{
+            const req=request(fullURL,options,async res=>{
                 const {statusCode}=res
                 if(statusCode===undefined||statusCode>=400){
                     if(!res.destroyed){
@@ -213,6 +215,7 @@ export class CLIT{
     }
     async download(url:string,path:string,downloadOptions?:DownloadOptions){
         const {
+            fullURL,
             request,
             options,
             formStr,
@@ -228,7 +231,7 @@ export class CLIT{
                     resolve(408)
                 }
             },requestTimeout*1000)
-            const req=request(url,options,async res=>{
+            const req=request(fullURL,options,async res=>{
                 const {statusCode}=res
                 if(statusCode!==200&&statusCode!==206){
                     if(!res.destroyed){
@@ -335,6 +338,7 @@ export class CLIT{
     }
     async existsURL(url:string,requestOptions?:RequestOptions){
         const {
+            fullURL,
             request,
             options,
             formStr,
@@ -344,7 +348,7 @@ export class CLIT{
             setTimeout(()=>{
                 resolve(false)
             },requestTimeout*1000)
-            const req=request(url,options,res=>{
+            const req=request(fullURL,options,res=>{
                 const {statusCode}=res
                 if(statusCode===undefined||statusCode>=400){
                     resolve(false)
