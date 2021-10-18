@@ -205,20 +205,16 @@ class CLIT {
                     resolve(statusCode ?? 500);
                     return;
                 }
-                let contentLength = 0;
-                let prettyContentLength = '';
-                if (verbose) {
-                    const contentLengthStr = res.headers['content-length'];
-                    if (contentLengthStr === undefined) {
-                        if (!res.destroyed) {
-                            res.destroy();
-                        }
-                        resolve(500);
-                        return;
+                const contentLengthStr = res.headers['content-length'];
+                if (contentLengthStr === undefined) {
+                    if (!res.destroyed) {
+                        res.destroy();
                     }
-                    contentLength = Number(contentLengthStr);
-                    prettyContentLength = CLIT.prettyData(contentLength);
+                    resolve(500);
+                    return;
                 }
+                const contentLength = Number(contentLengthStr);
+                const prettyContentLength = CLIT.prettyData(contentLength);
                 let currentLength = 0;
                 let stream;
                 streamStart = true;
