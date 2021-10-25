@@ -133,7 +133,7 @@ export class CLIT{
             method,
             headers,
         }
-        if(proxy==='http://xx.xx.xx.xx:3128'){
+        if(proxy==='http://host'){
             proxy=''
         }
         if(proxy.length===0){
