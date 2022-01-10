@@ -9,18 +9,20 @@ export interface Res {
     status: number;
 }
 export interface CLITOptions {
-    requestTimeout?: number;
-    proxy?: string;
     logLevel?: number;
+    proxy?: string;
+    allowUnauthorized?: boolean;
+    requestTimeout?: number;
 }
 export interface RequestOptions {
-    params?: Record<string, string | number>;
-    form?: Record<string, string>;
     cookie?: string;
-    referer?: string;
+    form?: Record<string, string>;
     noUserAgent?: boolean;
-    requestTimeout?: number;
+    params?: Record<string, string | number>;
     proxy?: string;
+    referer?: string;
+    allowUnauthorized?: boolean;
+    requestTimeout?: number;
 }
 export interface DownloadOptions extends RequestOptions {
     verbose?: boolean;
@@ -35,10 +37,10 @@ export declare class CLIT {
     log(msg: string | number | Error, level?: number): string;
     out(msg: string | number | Error, level?: number): void;
     sleep(time: number): Promise<void>;
-    protected initRequest(url: string, { params, form, cookie, referer, noUserAgent, requestTimeout, proxy, }?: RequestOptions): {
+    protected initRequest(url: string, { params, form, cookie, referer, noUserAgent, requestTimeout, proxy, allowUnauthorized }?: RequestOptions): {
         fullURL: string;
-        request: typeof http.request | typeof https.request;
-        options: http.RequestOptions;
+        request: typeof https.request | typeof http.request;
+        options: https.RequestOptions;
         formStr: string;
         requestTimeout: number;
     };

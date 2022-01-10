@@ -73,7 +73,7 @@ class CLIT {
             setTimeout(resolve, time * 1000);
         });
     }
-    initRequest(url, { params, form, cookie, referer, noUserAgent, requestTimeout, proxy, } = {}) {
+    initRequest(url, { params, form, cookie, referer, noUserAgent, requestTimeout, proxy, allowUnauthorized } = {}) {
         params = params ?? {};
         form = form ?? {};
         cookie = cookie ?? '';
@@ -81,6 +81,7 @@ class CLIT {
         noUserAgent = noUserAgent ?? false;
         requestTimeout = requestTimeout ?? this.options.requestTimeout ?? 10;
         proxy = proxy ?? this.options.proxy ?? '';
+        allowUnauthorized = allowUnauthorized ?? this.options.allowUnauthorized ?? false;
         const urlo = new url_1.URL(url);
         const { searchParams } = urlo;
         for (const key of Object.keys(params)) {
@@ -108,6 +109,7 @@ class CLIT {
         const options = {
             method,
             headers,
+            rejectUnauthorized: !allowUnauthorized
         };
         if (proxy === 'http://host') {
             proxy = '';
@@ -124,7 +126,7 @@ class CLIT {
             request,
             options,
             formStr,
-            requestTimeout,
+            requestTimeout
         };
     }
     async request(url, requestOptions) {
