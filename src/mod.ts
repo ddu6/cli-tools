@@ -26,6 +26,7 @@ export interface RequestOptions {
     referer?: string
     allowUnauthorized?: boolean
     requestTimeout?: number
+    headers?: http.OutgoingHttpHeaders
 }
 export interface DownloadOptions extends RequestOptions {
     verbose?: boolean
@@ -99,7 +100,8 @@ export class CLIT {
         noUserAgent,
         requestTimeout,
         proxy,
-        allowUnauthorized
+        allowUnauthorized,
+        headers: initHeaders
     }: RequestOptions = {}) {
         params = params ?? {}
         form = form ?? {}
@@ -116,6 +118,7 @@ export class CLIT {
         }
         const fullURL = urlo.href
         const headers: http.OutgoingHttpHeaders = {}
+        Object.assign(headers, initHeaders)
         if (cookie.length > 0) {
             headers.Cookie = cookie
         }

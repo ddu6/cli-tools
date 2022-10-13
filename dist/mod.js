@@ -73,7 +73,7 @@ class CLIT {
             setTimeout(resolve, time * 1000);
         });
     }
-    initRequest(url, { params, form, cookie, referer, noUserAgent, requestTimeout, proxy, allowUnauthorized } = {}) {
+    initRequest(url, { params, form, cookie, referer, noUserAgent, requestTimeout, proxy, allowUnauthorized, headers: initHeaders } = {}) {
         params = params ?? {};
         form = form ?? {};
         cookie = cookie ?? '';
@@ -89,6 +89,7 @@ class CLIT {
         }
         const fullURL = urlo.href;
         const headers = {};
+        Object.assign(headers, initHeaders);
         if (cookie.length > 0) {
             headers.Cookie = cookie;
         }
